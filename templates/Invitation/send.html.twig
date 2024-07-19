@@ -1,0 +1,211 @@
+{% extends 'base.html.twig' %}
+  
+{% block title %}Project{% endblock %}
+  
+{% block body %}
+
+	<script src="../../js/jquery/jquery-1.10.2.js"></script>
+	<script src="../../js/jquery/jquery.ui.core.js"></script>
+	<script src="../../js/jquery/jquery.ui.widget.js"></script>
+
+<!-- Style CSS -->
+<style>
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  overflow-y: hidden;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto; /* 5% from the top and centered */
+  padding: 2px;
+  border: 1px solid #888;
+  width: 90%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  /* font-size: 28px; */
+  /* font-weight: bold; */
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.column {
+  float: left;
+  width: 50%;
+}
+
+.column input[type="text"]{
+	width: 90%;
+}
+
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+</style>
+<!-- The Modal -->
+
+
+<div id="myModal" class="modal">
+  <!-- Modal content -->
+</div>
+
+    <div class="container">
+        <h2 class="text-center mt-5 mb-3" style="text-align: center;">Send an invitation</h2>
+		<p>Project title: {{ project.title }}</p>
+		<p>Total sent: 0 &nbsp;|&nbsp; <a href='#'>See sent invitations</a></p>
+		<p>Budget: {{ project.budget }}&nbsp;|&nbsp;Category: {{ project.projectCategory }}&nbsp;|&nbsp;<a href="{{ path('app_project_show', {'id': project.id}) }}">Open the project</a></p>
+		<p>You can send a work invitation to profesionnals you know and also to sugested talents if you want. You can send a total of 3 invitations</p>
+        <div class="row">
+			<div class="column"><form id='contacts' onsubmit="return false;">
+				<p><b>Your contacts</b></p>
+				<p>First contact</p>
+				<div class="ui-grid-b userInfo">
+					<div class="ui-block-a" style="">
+						<input name="name" type="text" placeholder='Name' >
+					</div>
+					<div class="ui-block-b" style="">
+						<input name="email" type="text" placeholder='Email' >
+					</div>
+				</div>
+				<p>Second contact</p>
+				<div class="ui-grid-b userInfo" >
+					<div class="ui-block-a" style="">
+						<input name="name" type="text" placeholder='Name' >
+					</div>
+					<div class="ui-block-b" style="">
+						<input name="email" type="text" placeholder='Email' >
+					</div>
+				</div>
+				<p>Tirth contact</p>
+				<div class="ui-grid-b userInfo">
+					<div class="ui-block-a" style="">
+						<input name="name" type="text" placeholder='Name' >
+					</div>
+					<div class="ui-block-b" style="">
+						<input name="email" type="text" placeholder='Email' >
+					</div>
+				</div>
+				<p>
+					<button id='sendInvitation'>Send</button>
+				</p></form>
+			</div>
+			<div class="column" style="padding-left: 2%">
+				<p><b>Our suggestions</b></p>
+				<div class="ui-grid-b">
+					<div class="ui-block-a" style=""><span>Vadim Vasilyev</span></div>
+					<div class="ui-block-b" style=""><span>Full stack web developer, Tallin Estonia</span></div>
+					<div class="ui-block-b" style=""><span><a href="#">More details</a></span></div>
+					<input name="checkbox" type="checkbox" value ='suggestion01@diamta.com--Vadim Vasilyev' >Select
+					<div>&nbsp;</div>
+				</div>
+				<div class="ui-grid-b">
+					<div class="ui-block-a" style=""><span>Sarah Baranova</span></div>
+					<div class="ui-block-b" style=""><span>IT specialist, Tallin Estonia</span></div>
+					<div class="ui-block-b" style=""><span><a href="#">More details</a></span></div>
+					<input name="checkbox" type="checkbox" value ='suggestion02@diamta.com--Sarah Baranova'>Select
+					<div>&nbsp;</div>
+				</div>
+				<div class="ui-grid-b">
+					<div class="ui-block-a" style=""><span>Juliette Gauvin</span></div>
+					<div class="ui-block-b" style=""><span>IT specialist, Paris France</span></div>
+					<div class="ui-block-b" style=""><span><a href="#">More details</a></span></div>
+					<input name="checkbox" type="checkbox" value ='suggestion03@diamta.com--Juliette Gauvin'>Select
+					<div>&nbsp;</div>
+				</div>
+				<p>Load more</p>
+			</div>
+			
+		</div>
+    </div>
+	
+<script src="https://use.fontawesome.com/releases/v5.0.13/js/all.js"></script>
+<script>
+	const domain 		= 'diamta.com';
+	const URL  			= window.location.href;
+	const http 			= window.location.protocol;
+	const serverbase 	= URL.includes( 'localhost' ) ? http + '//localhost/diamta/projects/public/index.php' :  http + '//' + domain + '/projects/public/index.php';
+
+	const sendInvitations = () => {
+		const data 	 	= new FormData();
+		const toSend 	= Array();
+		// User contacts
+		const infos = document.getElementsByClassName( 'userInfo' );
+		for( info of infos ){
+			const obj = {};
+			const name 	= info.children[0].nextSibling.value;
+			const email = info.children[1].nextSibling.value;
+			if( name && email ){
+				obj[ 'name' ]  	= name;
+				obj[ 'email' ] 	= email;
+				toSend.push( obj );
+			}
+		}
+
+		// Suggestions contacts
+		const checks 	= document.getElementsByName( 'checkbox' );
+		for( check of checks ){
+			const obj = {};
+			if( check.checked ){
+				const info  	= check.value;
+				const email		= info.split( '--' )[ 0 ];
+				const name  	= info.split( '--' )[ 1 ];
+				obj[ 'name' ]  	= name;
+				obj[ 'email' ] 	= email;
+				toSend.push( obj );
+			}
+		}
+		
+		// send message to contacts
+		var counter = 0;
+		const maxContacts = 5;
+		for( contact of toSend ){
+			if( counter > maxContacts -1 ){
+				alert( 'you sent the max allowed number of invitatons ' + maxContacts )
+				// responseFinish();
+			}
+			const xhttp = new XMLHttpRequest();
+			xhttp.onload = function() {
+				var result = this.responseText;
+				console.log( result );
+				counter++;
+				// responseFinish();
+			}
+			const server = serverbase + "/invitation/send/invitation";
+
+			const params = "name=" + contact.name + "&email=" + contact.email + "&projectId= + {{ project.id }}";
+			xhttp.open( "POST", server );
+			xhttp.setRequestHeader( "Content-Type", "application/x-www-form-urlencoded" );
+			xhttp.send( params );
+		}
+	}
+	
+	document.getElementById( 'sendInvitation' ).addEventListener( "click", sendInvitations );
+</script>
+
+<!-- Script JS -->
+{% endblock %}

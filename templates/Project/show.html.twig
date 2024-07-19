@@ -1,0 +1,414 @@
+{% extends 'base.html.twig' %}
+  
+{% block title %}Project{% endblock %}
+  
+{% block body %}
+
+	<script src="../../js/jquery/jquery-1.10.2.js"></script>
+	<script src="../../js/jquery/jquery.ui.core.js"></script>
+	<script src="../../js/jquery/jquery.ui.widget.js"></script>
+
+<!-- Style CSS -->
+<style>
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  overflow-y: hidden;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto; /* 5% from the top and centered */
+  padding: 2px;
+  border: 1px solid #888;
+  width: 90%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  /* font-size: 28px; */
+  /* font-weight: bold; */
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.chatFilesPreviewClass{
+	height: 42px;
+}
+
+.prevCellContainer{
+ width:200px; 
+ display:inline-block;
+ font-size: 12px;
+}
+
+.prevCell01{
+ max-width:60px; 
+ float:left;
+}
+
+.prevCell02{
+ width:140px; 
+ float:left;
+ padding-left: 5px;
+}
+
+.prevCell01 img{
+	object-fit: cover;
+	object-position: 25% 25%;
+	max-width:60px;
+	height: 42px;
+}
+
+</style>
+<!-- The Modal -->
+
+<script>
+// set use name in the chat
+person_name = "{{ app.user.username }}";
+bot_name = "Diamta";
+</script>
+
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+      <!--$%adsense%$-->
+      <main class="cd__main">
+         <!-- Start DEMO HTML (Use the following code into your project)-->
+         <section class="msger">
+  <header class="msger-header">
+    <div class="msger-header-title">
+      <i class="fas fa-comment-alt"></i> Your conversation with <b>{{ messageReceiver.username }}</b> about the project {{ project.title }}
+    </div>
+    <div class="msger-header-options close">
+      <span><i class="fas fa-cog"></i></span>
+    </div>
+  </header>
+
+  <main class="msger-chat" id="msgerchat">
+    <div class="msg left-msg">
+      <div
+       class="msg-img"
+       style="background-image: url(https://image.flaticon.com/icons/svg/327/327779.svg)"
+      ></div>
+
+      <div class="msg-bubble">
+        <div class="msg-info">
+          <div class="msg-info-name">Diamta</div>
+          <div class="msg-info-time"><span id='curentTime'>12:45</span></div>
+        </div>
+
+        <div class="msg-text">
+          Hi {{ app.user.username }}, welcome to your project's Chat room! Go ahead and send a message to our team.
+        </div>
+      </div>
+    </div>
+
+  </main>
+  
+  <div id='chatMsgMenu' style='height: 70px; padding: 5px; border-top: 0.5px solid silver; display: none;'>
+	<p id='chatMsgUserId' style=''>Message sender<br>
+	<p><div id='chatMsgResponse' style="width:95%; border:none; display='inline-block'; float:left; "></div><a title='close' id='responseFinishBtn' style='cursor:pointer;'>X</a></p>
+  </div>
+  <div title='close' id='chatFilesPreviewContainer' style='height: 50px; width:100%; display:inline-block; display: none;'>
+  <div id='chatFilesPreview' style='padding: 5px; border-top: 0.5px solid silver; width:98%; float:left; '>
+  </div><div id='chatFilesPreviewFinishBtnDiv' style='width:2%; float:left;'><a title='close' id='chatFilesPreviewFinishBtn' style='cursor:pointer;'>X</a></div></div>
+  <form class="msger-inputarea" onsubmit="return false;">
+	<label for="uploader" style="cursor: pointer; font-size:9px; height:31px; width:40px;">
+        <img title="Upload a file" id="profile_label" src="../../img/searchFile.png" alt="DP" style="position: relative; top: -190%; left: -109%;" >
+    </label>
+    <input style="display: none;" id="uploader" name="uploader" class="uploader" type="file" multiple >
+    <textarea  class="msger-input" style="white-space: pre-wrap;" placeholder="Enter your message..."></textarea>
+    <button class="msger-send-btn" id="sendBtn" >Send</button>
+	
+  </form>
+</section>
+         <!-- END EDMO HTML (Happy Coding!)-->
+      </main>
+      
+  </div>
+
+</div>
+
+    <div class="container">
+        <h2 class="text-center mt-5 mb-3" style="text-align: center;">Show Project</h2>
+		<p>&nbsp;</p>
+        <div class="card">
+            
+            </div>
+            <div class="card-body">
+                <b class="text-muted">Title: {{ project.title }}</b>
+                <br><br>
+                <b class="text-muted">Status:</b>
+                <p>{{ project.status }}</p>
+				<br><br>
+				<div class="card-header">
+                <a style='cursor: pointer;' id="myBtn" class="btn btn-outline-info float-right"> <img src='https://diamta.com/img/mail01.png' style='width:25px;'>&nbsp;<span id='countMessages' >&nbsp;</span></a><br><br>
+                <b class="text-muted">Budget:</b><br>
+                <p>{{ project.budget }} Eur</p><br>
+                <b class="text-muted">Description:</b><br>
+                <p>{{ project.description }}</p><br><br>
+
+                <b class="text-muted">Date to start:</b><br>
+                <p>{{ project.dateCreated ? project.dateCreated|date('Y-m-d') : '' }}</p><br><br>
+
+				{% if projectFileURL is not empty %}
+				<b class="text-muted">File:</b>
+                <p><a href='{{ projectFileURL }}' download>Document</a></p>
+				{% endif %}
+            </div>
+        </div>
+    </div>
+	
+<script>
+
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks on the button, open the modal
+btn.onclick = function() {
+	modal.style.display = "block";
+	// 
+	modalOpened = true;
+	msgerChat.scrollTop += 5000;
+	setMessagesRead( project_id );
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+	modal.style.display = "none";
+	modalOpened = false;
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+</script>
+<script src="https://use.fontawesome.com/releases/v5.0.13/js/all.js"></script>
+<script src="../../js/chat.js"></script>
+<script>
+	// Update chatscript variables
+	person_name = "{{ app.user.username }}";
+	bot_name 	= "Diamta";
+	project_id  = "{{ project.id }}";
+	// Update Date
+	const date 		= new Date();
+	const hour 		= date.getHours();
+	const minute 	= date.getMinutes();
+	const time 		= hour + ':' + minute;
+	projectManager	= "{{ projectManager }}";
+	receiver_id		= "{{ messageReceiver.id }}";
+	userid 			= "{{ app.user.id }}";
+	
+// alert( receiver_id );
+	document.getElementById( 'curentTime' ).innerHTML = time;
+
+</script>
+<script>
+	// uploade file
+    var inputFile = document.getElementById('uploader');
+    //var files = inputFile.files[0];
+    var files_count 	= 0;
+	const max_files 	= 4;
+	const fileSizeLimit = 50; // 50 mo
+	const allowedExt	= [ 'image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'application/pdf', 'text/plain', 'text/html', 'image/vnd.microsoft.icon', 'text/javascript', 'application/json', 'audio/mpeg', 'video/mp4', 'application/x-httpd-php', 'application/vnd.ms-powerpoint', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/csv', 'text/css', 'application/vnd.rar', 'application/zip', 'application/x-zip-compressed', 'application/x-gzip'];
+	const imgExt 	= [ 'image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'jpeg', 'png', 'gif', 'bmp', 'jpg' ];
+	
+	// Preview images
+	var chatFilesPreviewHTML 	= '';
+	var files = '';
+	uploader.onchange = ( event ) => {
+        // jQuery( "#anim03" ).show();
+        files = event.target.files;
+        files = Object.values(files);
+		
+        if (files) {
+
+            // preview
+			var count_files = 0;
+			for ( let i = 0; i < files.length; i++ ) {
+				const filesize	= files[i].size;
+				const filename 	= files[i].name;
+				// Validations
+				// File limit
+				if( ( +i + count_files ) > max_files ){
+                        alert( "You reached the max number of images (" + ( max_files +1 ) + ")" );
+                        break;
+                }
+				// Extension limit
+				const fileType = files[i].type;
+				if ( !allowedExt.includes( fileType ) ){
+					alert( "Not allowed file type " + files[i].type );
+                    continue;
+				}
+				// Size limit
+				const filesizeMo = filesize / 1024 / 1024;
+				if ( filesizeMo > fileSizeLimit ){
+					alert( "A file is greater than the limit of " + fileSizeLimit + " MB (" + filesizeMo + ")" );
+                    continue;
+				}
+				
+				// previews
+				document.getElementById( 'chatFilesPreviewContainer' ).style.display = 'block';
+				const documentsImg = '../../img/searchFile.png';
+				var fileArr 	= [];
+			
+				const image = document.createElement( 'img' );
+				const imageParent = document.getElementById( 'chatFilesPreview' );
+				image.id = "id" + i;
+				const src = getFileScr( fileType, event, i ); 
+				const shortName = ( filename.length > 18 ) ? filename.substring(0,18) + '...' : filename;
+				
+				chatFilesPreviewHTML = "<div class='prevCellContainer'><div class='prevCell01'><a title='" + filename + "'><img src='" + src + "'></a></div><div class='prevCell02'>" + shortName + "<br>" + parseFloat( filesizeMo ).toFixed(2) + " Mo </div></div>&nbsp;";
+				// imageParent.appendChild( chatFilesPreviewHTML );
+				chatFilesPreviewHTML = imageParent.innerHTML + chatFilesPreviewHTML;
+				imageParent.innerHTML = chatFilesPreviewHTML;
+				
+				// save file
+
+				
+				// const extension	= filename.split( '.' )[ filename.split( '.' ).length -1 ];	
+
+				
+				// saveFile( files[i] );
+            }
+
+// console.log( fileArr );
+
+			// appendFile( fileArr );
+            // alert( files_count );
+        }
+        // stop anim
+        // jQuery( "#anim03" ).hide();
+        jQuery("#uploader").val(null); // empty the file input
+    }
+	
+	// 
+	const getFileScr = ( fileType, event, fileIndice ) => {
+// alert( fileType );
+		var src = '';
+		if( imgExt.includes( fileType ) ){
+			src = window.URL.createObjectURL( event.target.files[ fileIndice ] );
+		}
+		else if( fileType == 'image/jpeg' || fileType == 'jpeg' || fileType == 'jpg' ){
+			src = '../../img/pdfIcon.png';
+		}
+		else if( fileType == 'image/png' || fileType == 'png' || fileType == 'png'  ){
+			src = '../../img/pdfIcon.png';
+		}
+		else if( fileType == 'image/gif' || fileType == 'gif' ){
+			src = '../../img/pdfIcon.png';
+		}
+		else if( fileType == 'image/bmp' || fileType == 'bmp' ){
+			src = '../../img/pdfIcon.png';
+		}
+		else if( fileType == 'application/pdf' || fileType == 'pdf' ){
+			src = '../../img/pdfIcon.png';
+		}
+		else if( fileType == 'image/vnd.microsoft.icon' || fileType == 'ico' ){
+			src = '../../img/imagesIcon.png';
+		}
+		else if( fileType == 'text/plain' || fileType == 'txt' ){
+			src = '../../img/textIcon.png';
+		}
+		else if( fileType == 'text/javascript' || fileType == 'js' ){
+			src = '../../img/jsIcon.png';
+		}
+		else if( fileType == 'application/json' || fileType == 'json' ){
+			src = '../../img/jsonIcon.png';
+		}
+		else if( fileType == 'audio/mpeg' || fileType == 'mpeg' ){
+			src = '../../img/mpegIcon.png';
+		}
+		else if( fileType == 'video/mp4' || fileType == 'mp4' ){
+			src = '../../img/mp4Icon.png';
+		}
+		else if( fileType == 'application/x-httpd-php' || fileType == 'php' ){
+			src = '../../img/phpIcon.png';
+		}
+		else if( fileType == 'application/vnd.ms-powerpoint' || fileType == 'ppt' ){
+			src = '../../img/pptIcon.png';
+		}
+		else if( fileType == 'application/vnd.ms-excel' || fileType == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || fileType == 'xlsx' || fileType == 'xls'  ){ 
+			src = '../../img/excelIcon.png';
+		}
+		else if( fileType == 'application/zip' || fileType == 'application/x-zip-compressed' || fileType == 'application/x-gzip' || fileType == 'zip' ){
+			src = '../../img/zipIcon.png';
+		}
+		else if( fileType == 'application/msword' || fileType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || fileType == 'doc' || fileType == 'docx' ){
+			src = '../../img/wordIcon.png';
+		}
+		else if( fileType == 'text/csv' || fileType == 'csv' ){
+			src = '../../img/csvIcon.png';
+		}
+		else if( fileType == 'text/css' || fileType == 'css' ){
+			src = '../../img/cssIcon.png';
+		}
+		else if( fileType == 'application/vnd.rar' || fileType == 'rar' ){
+			src = '../../img/rarIcon.png';
+		}
+		else{
+			src = '../../img/docIcon.png';
+		}
+		
+		return src;
+	}
+	
+	const closeChatFilesPreview = () => {
+		chatFilesPreviewHTML = '';
+		document.getElementById( 'chatFilesPreview' ).innerHTML = '';
+		document.getElementById( 'chatFilesPreviewContainer' ).style.display = 'none';
+
+		files = '';	// the following lines in case this is not enough to clear the file input
+		
+		var es = document.forms[0].elements;
+		clearInputFile(es[0]);
+		function clearInputFile(f){
+			if(f.value){	
+				try{
+					f.value = ''; //for IE11, latest Chrome/Firefox/Opera...
+				}catch(err){
+				}
+				if(f.value){ //for IE5 ~ IE10
+					var form = document.createElement('form'), ref = f.nextSibling;
+					form.appendChild(f);
+					form.reset();
+					ref.parentNode.insertBefore(f,ref);
+				}
+			}
+			else{
+			}
+		}
+	}
+	document.getElementById( 'chatFilesPreviewFinishBtn' ).addEventListener( 'click', closeChatFilesPreview );
+
+</script>
+<!-- Script JS -->
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+  
+{% block title %}Project index{% endblock %}
+  
+{% block body %}
+   <script>
+	const http 		= window.location.protocol;
+	const URL  			= window.location.href;
+	const domain 		= 'diamta.com';
+	const serverbase 	= URL.includes( 'localhost' ) ? http + '//localhost/diamta/projects/public/index.php' :  http + '//' + domain + '/projects/public/index.php';
+
+    const displayManager = () =>{
+		alert( "\r\rJohanna Toom,\r\r Data Extraction Specialist,\r\r Tallinn, Estonia" );
+    }
+	const sendInvitation = ( projecId ) =>{
+		const server = serverbase + "/invitation/send/" + projecId;
+		const invitationLink = window.location.href = server;
+	}
+   </script>
+    <div class="container">
+        <div class="card">
+            <div class="card-header" style="text-align:center;">
+                <h2>Your Projects ( {{ projects|length }} )</h2>
+            </div>
+            <div class="card-body">
+				{% if projects is empty %}
+				{% else %}
+                <table class="table table-bordered" style='width:100%; font-size:small;'>
+					<tr>
+                        <th style="
+    text-align: left;">Title</th>
+                        <th style="
+    text-align: left;">Status</th>
+                        <th style="
+    text-align: left;">Date Created</th>
+                        <th style="
+    text-align: left;">Budget (Eur)</th>
+						<th style="
+    text-align: left;">Assigned expert</th>
+                        <th style="width=240px; text-align: left;">Action</th>
+                    </tr>
+                    {% for project in projects %}
+                    <tr>
+                        <td><a class="btn btn-outline-info"
+                        href="{{ path('app_project_show', {'id': project.id}) }}">{{ project.title }}</a></td>
+                        <td>{{ project.status }}</td>
+                        <td>{{ project.dateCreated ? project.dateCreated|date('Y-m-d H:i:s') : '' }}</td>
+						<td>{{ project.budget }}
+						</td>
+                        <td><a class="btn" style="cursor: pointer; color:blue;" onclick="sendInvitation( {{ project.id }} );">
+						Send an invitaion</a></td>
+                        <td>
+                            <form method="post" action="{{ path('app_project_delete', {'id': project.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                <a
+                                    class="btn btn-outline-success"
+                                    href="{{ path('app_project_show', {'id': project.id}) }}">
+                                    Edit
+                                </a>&nbsp;
+  
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ project.id) }}">
+                                <button class="btn btn-outline-danger" disabled>Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+				{% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+  
+{% block title %}New Project{% endblock %}
+  
+{% block body %}
+    <div class="container">
+        <div class="card">
+            <div class="card-header" style="text-align:center;">
+                <h2>Create a Project</h2>
+            </div>
+            <div class="card-body">
+                 {{ include('Project/_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* {
+  box-sizing: border-box;
+}
+
+.menu {
+  float: left;
+  width: 10%;
+  text-align: center;
+}
+
+.menu a {
+  background-color: #e5e5e5;
+  padding: 8px;
+  margin-top: 7px;
+  display: block;
+  width: 100%;
+  color: black;
+}
+
+.main {
+  float: left;
+  width: 80%;
+  padding: 0 20px;
+}
+
+.right {
+  background-color: #e5e5e5;
+  float: left;
+  width: 10%;
+  padding: 15px;
+  margin-top: 7px;
+  text-align: center;
+}
+
+@media only screen and (max-width: 620px) {
+  /* For mobile phones: */
+  .menu, .main, .right {
+    width: 100%;
+  }
+}
+</style>
+{% block stylesheets %}
+            {#{{ encore_entry_link_tags('app') }}#}
+			<link rel="stylesheet" href="../../css/chatstyle.css">
+			<link rel="stylesheet" href="../../css/chatdemo.css">
+        {% endblock %}
+{% block javascripts %}
+            {#{{ encore_entry_script_tags('app') }}#}
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+{% endblock %}
+<link rel="icon" type="image/x-icon" href="https://diamta.com/img/favicon.png">
+</head>
+<body style="font-family:Verdana;color:#aaaaaa; background-color: #fff;" >
+
+<div style="background-color:#e5e5e5;padding:15px;text-align:center; width:100%;"><img style='width: 100px;' src="https://diamta.com/img/logo10.png">&nbsp;
+</div>
+
+<div style="overflow:auto; width:100%;">
+  <div class="menu">
+    <a class="btn btn-outline-primary" href="{{ path('app_project_new') }}">Create a New Project 
+    </a>
+    <a class="btn btn-outline-primary" href="{{ path('app_project_index') }}">List your projects </a>
+  </div>
+
+  <div class="main" style="height:460px;">
+    {% block body %}{% endblock %}
+  </div>
+
+  <div class="right">
+    <p>
+	{% block user_block %}
+    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+     {{ app.user.userName }}
+     <br>
+     <a class="btn btn-primary btn-connexion" href="{{ path('fos_user_security_logout') }}" role="button" data-toggle="popover" data-trigger="hover" data-placement="left" data-html="true" title="<center><u>Vous avez un compte</u></center>" data-content="<center>Cliquez pour vous déconnecter</center>">{% trans %}Logout{% endtrans %}</a>
+ {% else %}
+     <a class="btn btn-primary btn-connexion" href="{{ path('fos_user_security_login') }}" role="button" data-toggle="popover" data-trigger="hover" data-placement="left" data-html="true" title="<center><u>Vous avez un compte</u></center>" data-content="<center>Cliquez pour vous connecter</center>">{% trans %}Connect you{% endtrans %}</a>
+     <a class="btn btn-primary btn-connexion" href="{{ path('fos_user_registration_register') }}" role="button" data-toggle="popover" data-trigger="hover" data-placement="left" data-html="true" title="<center><u>Vous n'avez pas de compte</u></center>" data-content="<center>Cliquez pour en créer un</center>">{% trans %}Register you{% endtrans %}</a>
+ {% endif %}
+{% endblock %}
+	</p>
+  </div>
+</div>
+
+<div style="background-color:#e5e5e5;text-align:center;padding:10px;margin-top:7px; width: 100%;">© copyright diamta.com</div>
+
+</body>
+</html>
+
